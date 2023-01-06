@@ -4,13 +4,10 @@ import com.alianrest.alianrest.entity.Alian;
 import com.alianrest.alianrest.repo.AlianRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class AlianController {
@@ -29,7 +26,7 @@ public class AlianController {
         return alianRepo.findById(id).orElse(null);
     }
 
-    @GetMapping(path = "/getAllAlians" , produces = {"application/json"})
+    @GetMapping(path = "/getAllAlians", produces = {"application/json"})
     public List<Alian> getAllAlians() {
 
         Iterable<Alian> all = alianRepo.findAll();
@@ -41,58 +38,38 @@ public class AlianController {
     }
 
 
-    @PostMapping(value = "/saveAlian")
+    @PostMapping(value = "/saveAlian", produces = {"application/json"})
     public Alian getAlian(@RequestBody Alian alian) {
         Alian save = alianRepo.save(alian);
         return save;
     }
 
-    @DeleteMapping("/deleteAlian")
-    public String deleteAlian(@RequestParam("id") int deleteId) {
+    @DeleteMapping(value = "/deleteAlian", produces = {"application/json"})
+    public String deleteAlian(@PathVariable("id") int deleteId) {
         try {
             alianRepo.delete(alianRepo.findById(deleteId).orElse(new Alian()));
-
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
         System.out.println("deleted.");
-        return "home.jsp";
+        return "Deleted";
     }
 
     @GetMapping("/getAliansByTech")
-    public ModelAndView getAlianByTech(@RequestParam("tech") String tech) {
-        ModelAndView mv = new ModelAndView("/alianshow.jsp");
-        List<Alian> byTech = alianRepo.findByTech(tech);
-        StringBuilder builder = new StringBuilder("");
-        byTech.stream().iterator().forEachRemaining(alian -> {
-            builder.append(alian.toString());
-        });
-        mv.addObject("obj", builder);
-        return mv;
+    public List<Alian> getAlianByTech(@RequestParam("tech") String tech) {
+        return alianRepo.findByTech(tech);
+
     }
 
-    @GetMapping("/getAliansGTId")
-    public ModelAndView getAliansGTId(@RequestParam("id") int id) {
-        ModelAndView mv = new ModelAndView("/alianshow.jsp");
-        List<Alian> byTech = alianRepo.findByAidIsGreaterThan(id);
-        StringBuilder builder = new StringBuilder("");
-        byTech.stream().iterator().forEachRemaining(alian -> {
-            builder.append(alian.toString());
-        });
-        mv.addObject("obj", builder);
-        return mv;
+    @GetMapping(value = "/getAliansGTId", produces = {"application/json"})
+    public List<Alian> getAliansGTId(@RequestParam("id") int id) {
+        return alianRepo.findByAidIsGreaterThan(id);
+
     }
 
     @GetMapping("/getAliansByTechSorted")
-    public ModelAndView getAliansGTId(@RequestParam("tech") String tech) {
-        ModelAndView mv = new ModelAndView("/alianshow.jsp");
-        List<Alian> byTech = alianRepo.findByTechSorted(tech);
-        StringBuilder builder = new StringBuilder("");
-        byTech.stream().iterator().forEachRemaining(alian -> {
-            builder.append(alian.toString());
-        });
-        mv.addObject("obj", builder);
-        return mv;
+    public List<Alian> getAliansGTId(@RequestParam("tech") String tech) {
+        return alianRepo.findByTechSorted(tech);
     }
 }
