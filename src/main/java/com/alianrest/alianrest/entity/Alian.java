@@ -43,7 +43,7 @@ public class Alian {
 
     @Override
     public String toString() {
-        return "Alian{" +
+        return "{" +
                 "aid=" + aid +
                 ", name='" + name + '\'' +
                 ", tech='" + tech + '\'' +

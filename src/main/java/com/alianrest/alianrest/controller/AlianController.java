@@ -3,57 +3,48 @@ package com.alianrest.alianrest.controller;
 import com.alianrest.alianrest.entity.Alian;
 import com.alianrest.alianrest.repo.AlianRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Controller
+@RestController
 public class AlianController {
 
     @Autowired
     AlianRepo alianRepo;
 
-    @GetMapping(path = "/home")
+    @GetMapping(path = "/version", produces = {"application/json"})
     public String home() {
-        return "home.jsp";
+        return "1.1";
     }
 
-    @GetMapping(path = "/getAlian")
-    public ModelAndView getAlian(@RequestParam("id") int aid) {
-
-        ModelAndView mv = new ModelAndView("alianshow.jsp");
-        Optional<Alian> alian = alianRepo.findById(aid);
-        AtomicReference<Alian> alian1 = new AtomicReference<>();
-        alian.ifPresent(alian2 -> {
-            alian1.set(alian2);
-        });
-        mv.addObject("obj", alian1.toString());
-        return mv;
+    @GetMapping(path = "/getAlian/{id}", produces = {"application/json"})
+    @ResponseBody
+    public Alian getAlian(@PathVariable("id") int id) {
+        return alianRepo.findById(id).orElse(null);
     }
 
-    @GetMapping(path = "/getAllAlians")
-    public ModelAndView getAllAlians() {
+    @GetMapping(path = "/getAllAlians" , produces = {"application/json"})
+    public List<Alian> getAllAlians() {
 
-        ModelAndView mv = new ModelAndView("alianshow.jsp");
         Iterable<Alian> all = alianRepo.findAll();
-        StringBuilder builder = new StringBuilder("");
+        List<Alian> alians = new ArrayList<>();
         all.forEach(alian -> {
-            builder.append(alian.toString());
+            alians.add(alian);
         });
-        mv.addObject("obj", all);
-        return mv;
+        return alians;
     }
 
 
-    @PostMapping("/saveAlian")
-    public String getAlian(Alian alian) {
-        alianRepo.save(alian);
-        return "home.jsp";
+    @PostMapping(value = "/saveAlian")
+    public Alian getAlian(@RequestBody Alian alian) {
+        Alian save = alianRepo.save(alian);
+        return save;
     }
 
     @DeleteMapping("/deleteAlian")
